@@ -1,4 +1,4 @@
-package GeneradorCsv;
+package generador.csv;
 
 public class Constants {
 
@@ -24,5 +24,6 @@ public class Constants {
     public static final String EXCLAMATION = "!";
     public static final String PLUS_SIGN = "+";
     public static final String GUIONBAJO = "_";
+    public static final String NEW_LINE = "\r\n";
 
 }
