@@ -14,12 +14,10 @@ import org.apache.poi.ss.usermodel.*;
 
 public class ExcelParser {
     public static void main(String[] args) {
-        /*String sourceFolderPath = "C:\\path\\to\\source\\folder";
-        String destinationFilePath = "C:\\path\\to\\destination\\file.xlsx";*/
+
 
         try {
-            /*File sourceFolder = new File(sourceFolderPath);
-            File[] files = sourceFolder.listFiles();*/
+
 
             Properties prop = new Properties();
             loadProperties(prop);
