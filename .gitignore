@@ -23,3 +23,19 @@
 hs_err_pid*
 replay_pid*
 
+.idea/checkstyle-idea.xml
+.idea/checkstyle-idea.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/vcs.xml
+.idea/sonarlint/issuestore/index.pb
+.idea/checkstyle-idea.xml
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/misc.xml
+.idea/sonarlint/issuestore/b/1/b19f4244d298398c0227a4129de0f9ddca1cbf8f
+.idea/sonarlint/securityhotspotstore/b/1/b19f4244d298398c0227a4129de0f9ddca1cbf8f
+.idea/sonarlint/securityhotspotstore/index.pb
+.idea/vcs.xml
+target/classes/application.properties
+target/classes/generador/csv/GeneradorCsv.class

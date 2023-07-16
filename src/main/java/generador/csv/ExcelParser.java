@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
-
 public class ExcelParser {
     public static void main(String[] args) {
 
@@ -24,6 +23,7 @@ public class ExcelParser {
             // get the property value and print it out
             final String PATH_TO_WALK = prop.getProperty("path.to.walk") ;
             final String PATH_TO_WRITE = prop.getProperty("path.to.write") ;
+            Boolean processed = false ;
 
 
             List<File> filesInFolder = Files.walk(Paths.get(PATH_TO_WALK))
@@ -35,8 +35,13 @@ public class ExcelParser {
             Sheet destinationSheet = destinationWorkbook.createSheet("ParsedData");
             int rowIndex = 0;
 
+            System.out.println("============= FILES IN PATH =============");
             for (File file : filesInFolder) {
+
+                System.out.println(file.toString());
+
                 if (file.isFile() && file.getName().endsWith(".xlsx")) {
+
                     Workbook sourceWorkbook = WorkbookFactory.create(file);
 
                     for (Sheet sourceSheet : sourceWorkbook) {
@@ -56,6 +61,7 @@ public class ExcelParser {
 
                                 destinationTelephoneCell.setCellValue(normalizedTelephone);
                                 destinationPersonCell.setCellValue(person);
+                                processed = true ;
                             }
                         }
                     }
@@ -64,12 +70,26 @@ public class ExcelParser {
                 }
             }
 
-            FileOutputStream fos = new FileOutputStream(PATH_TO_WRITE);
-            destinationWorkbook.write(fos);
-            destinationWorkbook.close();
-            fos.close();
+            if (processed) {
 
-            System.out.println("Parsing complete. Output file saved at: " + PATH_TO_WRITE);
+                // Create the destination folder if it doesn't exist
+                File destinationFolder = new File(PATH_TO_WRITE).getParentFile();
+                if (!destinationFolder.exists()) {
+                    destinationFolder.mkdirs();
+                }
+
+
+                FileOutputStream fos = new FileOutputStream(PATH_TO_WRITE);
+                destinationWorkbook.write(fos);
+                destinationWorkbook.close();
+                fos.close();
+
+                System.out.println("Parsing complete. Output file saved at: " + PATH_TO_WRITE);
+            } else {
+                System.out.println("============= NOTHING DONE =============");
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
