@@ -39,3 +39,5 @@ replay_pid*
 .idea/vcs.xml
 target/classes/application.properties
 target/classes/generador/csv/GeneradorCsv.class
+target/classes/application.properties
+target/classes/generador/csv/GeneradorCsv.class
