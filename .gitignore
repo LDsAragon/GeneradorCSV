@@ -41,3 +41,10 @@ target/classes/application.properties
 target/classes/generador/csv/GeneradorCsv.class
 target/classes/application.properties
 target/classes/generador/csv/GeneradorCsv.class
+target/classes/generador/csv/GeneradorCsv.class
+.idea/sonarlint/securityhotspotstore/f/8/f827f9c52d4952f5892ec52bbccb138a943f2e4b
+.idea/sonarlint/securityhotspotstore/4/4/442292b8a7efeabbe4cc176709b833b1792140ec
+.idea/sonarlint/issuestore/f/8/f827f9c52d4952f5892ec52bbccb138a943f2e4b
+.idea/sonarlint/issuestore/4/4/442292b8a7efeabbe4cc176709b833b1792140ec
+*.class
+*.class
