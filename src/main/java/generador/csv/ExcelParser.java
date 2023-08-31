@@ -1,4 +1,9 @@
-package generador.csv ;
+package generador.csv;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -7,9 +12,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
 
 public class ExcelParser {
     public static void main(String[] args) {
@@ -32,15 +34,30 @@ public class ExcelParser {
 
             for (File file : filesInFolder) {
                 if (file.isFile() && file.getName().endsWith(".xlsx")) {
-                    Workbook sourceWorkbook = WorkbookFactory.create(file);
+
+                    System.out.println("Nombre del Archivo : " + file.toString());
+
+                    // OPCPackage pkg = OPCPackage.open(file);
+                    XSSFWorkbook sourceWorkbook = new XSSFWorkbook(file);
 
                     for (Sheet sourceSheet : sourceWorkbook) {
-                        for (Row sourceRow : sourceSheet) {
-                            Cell telephoneCell = sourceRow.getCell(2); // Adjust column index for telephone number
-                            Cell personCell = sourceRow.getCell(3); // Adjust column index for person name
+
+                        System.out.println("Nombre de la hoja : "  + sourceSheet.getSheetName());
+
+                        for (int i = 10; i < sourceSheet.getPhysicalNumberOfRows(); i++) {
+
+                            Row sourceRow = sourceSheet.getRow(i);
+
+                            Cell telephoneCell = null ;
+                            Cell personCell = null ;
+
+                            if (sourceRow != null) {
+                                telephoneCell = sourceRow.getCell(19); // Adjust column index for telephone number
+                                personCell = sourceRow.getCell(2); // Adjust column index for person name
+                            }
 
                             if (telephoneCell != null && personCell != null) {
-                                String telephone = telephoneCell.getStringCellValue();
+                                String telephone = getCellPhoneValue(telephoneCell);
                                 String person = personCell.getStringCellValue();
 
                                 String normalizedTelephone = normalizeTelephone(telephone);
@@ -67,6 +84,7 @@ public class ExcelParser {
                                 processed = true;
                             }
                         }
+                        
                     }
 
                     sourceWorkbook.close();
@@ -74,17 +92,21 @@ public class ExcelParser {
             }
 
             if (processed) {
-                FileOutputStream fos = new FileOutputStream(PATH_TO_WRITE);
+                String rutaCompleta = PATH_TO_WRITE+ "dummyExample.xlsx" ;
+                FileOutputStream fos = new FileOutputStream(rutaCompleta);
                 destinationWorkbook.write(fos);
                 destinationWorkbook.close();
                 fos.close();
 
-                System.out.println("Parsing complete. Output file saved at: " + PATH_TO_WRITE);
+                System.out.println("Parsing complete. Output file saved at: " + rutaCompleta);
             } else {
                 System.out.println("Nothing to process.");
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InvalidFormatException e) {
+            e.printStackTrace();
+            //throw new RuntimeException(e);
         }
     }
 
@@ -127,5 +149,36 @@ public class ExcelParser {
             }
         }
         return -1;
+    }
+
+    private static String getCellPhoneValue(Cell cell) {
+
+        String result = "";
+
+        if (cell.getCellType().equals(CellType.BLANK)) {
+            result = "";
+        }
+
+        if (cell.getCellType().equals(CellType.STRING)) {
+            result = cell.getStringCellValue();
+        }
+
+        if (cell.getCellType().equals(CellType.NUMERIC)) {
+            result = String.valueOf(cell.getNumericCellValue());
+        }
+
+        if (cell.getCellType().equals(CellType.ERROR)) {
+            result = String.valueOf(cell.getErrorCellValue());
+        }
+
+        if (cell.getCellType() != CellType.STRING
+                && cell.getCellType() != CellType.NUMERIC
+                && cell.getCellType() != CellType.ERROR
+                && cell.getCellType() != CellType.BLANK
+        ){
+            System.out.println("CELL TYPE NOT KOWN: " + cell.getCellType());
+        }
+
+        return result;
     }
 }
