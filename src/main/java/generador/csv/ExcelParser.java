@@ -84,7 +84,7 @@ public class ExcelParser {
                                 processed = true;
                             }
                         }
-                        
+
                     }
 
                     sourceWorkbook.close();
@@ -176,7 +176,8 @@ public class ExcelParser {
                 && cell.getCellType() != CellType.ERROR
                 && cell.getCellType() != CellType.BLANK
         ){
-            System.out.println("CELL TYPE NOT KOWN: " + cell.getCellType());
+            System.out.println("CELL TYPE NOT KNOW: " + cell.getCellType());
+            System.out.println("CELL data : " + cell );
         }
 
         return result;
