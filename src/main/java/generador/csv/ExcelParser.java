@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,16 +38,17 @@ public class ExcelParser {
             for (File file : filesInFolder) {
                 if (file.isFile() && file.getName().endsWith(".xlsx")) {
 
-                    System.out.println("Nombre del Archivo : " + file);
+                    //System.out.println("Nombre del Archivo : " + file);
 
                     XSSFWorkbook sourceWorkbook = new XSSFWorkbook(file);
 
                     for (Sheet sourceSheet : sourceWorkbook) {
 
-                        System.out.println("Nombre de la hoja : "  + sourceSheet.getSheetName());
+                        System.out.println("Nombre de la hoja : "  + sourceSheet.getSheetName() + " Nombre del Archivo : " + file);
 
                         for (int i = 10; i < sourceSheet.getPhysicalNumberOfRows(); i++) {
 
+                            System.out.println("FIla: " + i);
                             Row sourceRow = sourceSheet.getRow(i);
 
                             Cell telephoneCell = null ;
@@ -66,25 +68,25 @@ public class ExcelParser {
                                 // Check if the person already exists in the destination sheet
                                 int existingRowIndex = findExistingPerson(destinationSheet, person);
 
-                                if ( !telephone.isBlank() && !person.isBlank() && existingRowIndex == -1) {
+                                if ( !normalizedTelephone.isBlank() && !person.isBlank() && existingRowIndex == -1) {
                                     // Person does not exist, create a new row
                                     Row destinationRow = destinationSheet.createRow(rowIndex++);
                                     Cell destinationTelephoneCell = destinationRow.createCell(Cabecera.C32.getPosicion()); // Column AG
                                     Cell destinationPersonCell = destinationRow.createCell(Cabecera.C1.getPosicion()); // Column A
                                     Cell destinationPersonCell2 = destinationRow.createCell(Cabecera.C2.getPosicion()); // Column A
 
-                                    destinationTelephoneCell.setCellValue(normalizedTelephone);
+                                    destinationTelephoneCell.setCellValue(Long.parseLong(normalizedTelephone));
                                     destinationPersonCell.setCellValue(person);
                                     destinationPersonCell2.setCellValue(person);
 
 
-                                } else if (!telephone.isBlank() && !person.isBlank() ){
+                                } /*else if (!normalizedTelephone.isBlank() && !person.isBlank() ){
                                     // Person exists, update the telephone number
                                     Row existingRow = destinationSheet.getRow(existingRowIndex);
                                     Cell existingTelephoneCell = existingRow.getCell(32); // Column AG
 
                                     existingTelephoneCell.setCellValue(normalizedTelephone);
-                                }
+                                }*/
                                 destinationSheet.autoSizeColumn(i);
                                 processed = true;
                             }
@@ -118,7 +120,7 @@ public class ExcelParser {
     private static String normalizeTelephone(String telephone) {
         // Clean the telephone number by removing noise characters
         telephone = telephone.replaceAll("[^0-9]", "");
-
+        telephone = telephone.replaceAll("\"", "");
         telephone = telephone.replaceAll("'", "");
 
         // Normalize country code and area code if present
