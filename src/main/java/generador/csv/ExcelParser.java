@@ -25,6 +25,7 @@ public class ExcelParser {
             // Get the property values
             final String PATH_TO_WALK = prop.getProperty("path.to.walk");
             final String PATH_TO_WRITE = prop.getProperty("path.to.write");
+            final String EXCEL_NAME = prop.getProperty("excel.name");
             Boolean processed = false;
 
             List<File> filesInFolder = Files.walk(Paths.get(PATH_TO_WALK))
@@ -98,7 +99,7 @@ public class ExcelParser {
                 destinationSheet.autoSizeColumn(Cabecera.C2.getPosicion());
                 destinationSheet.autoSizeColumn(Cabecera.C32.getPosicion());
 
-                String rutaCompleta = PATH_TO_WRITE + "ContactosExportados.xlsx";
+                String rutaCompleta = PATH_TO_WRITE + EXCEL_NAME;
                 FileOutputStream fos = new FileOutputStream(rutaCompleta);
                 destinationWorkbook.write(fos);
                 destinationWorkbook.close();
