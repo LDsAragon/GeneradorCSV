@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,9 +14,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import static generador.csv.Constants.NEW_LINE;
+
 public class ExcelParser {
     public static void main(String[] args) {
         try {
+            long startTime = System.nanoTime();
             Properties prop = new Properties();
             loadProperties(prop);
             // Get the property values
@@ -44,15 +46,15 @@ public class ExcelParser {
 
                     for (Sheet sourceSheet : sourceWorkbook) {
 
-                        System.out.println("Nombre de la hoja : "  + sourceSheet.getSheetName() + " Nombre del Archivo : " + file);
+                        System.out.println("Nombre de la hoja : " + sourceSheet.getSheetName() + " Nombre del Archivo : " + file);
 
                         for (int i = 10; i < sourceSheet.getPhysicalNumberOfRows(); i++) {
 
-                           // System.out.println("FIla: " + i); //DEBUG
+                            // System.out.println("FIla: " + i); //DEBUG
                             Row sourceRow = sourceSheet.getRow(i);
 
-                            Cell telephoneCell = null ;
-                            Cell personCell = null ;
+                            Cell telephoneCell = null;
+                            Cell personCell = null;
 
                             if (sourceRow != null) {
                                 telephoneCell = sourceRow.getCell(19); // Adjust column index for telephone number
@@ -67,7 +69,7 @@ public class ExcelParser {
 
                                 // Check if the person already exists in the destination sheet
 
-                                if ( !normalizedTelephone.isBlank() && !person.isBlank() ) {
+                                if (!normalizedTelephone.isBlank() && !person.isBlank()) {
                                     // Person does not exist, create a new row
                                     Row destinationRow = destinationSheet.createRow(rowIndex++);
                                     Cell destinationTelephoneCell = destinationRow.createCell(Cabecera.C32.getPosicion()); // Column AG
@@ -96,7 +98,7 @@ public class ExcelParser {
                 destinationSheet.autoSizeColumn(Cabecera.C2.getPosicion());
                 destinationSheet.autoSizeColumn(Cabecera.C32.getPosicion());
 
-                String rutaCompleta = PATH_TO_WRITE + "ContactosExportados.xlsx" ;
+                String rutaCompleta = PATH_TO_WRITE + "ContactosExportados.xlsx";
                 FileOutputStream fos = new FileOutputStream(rutaCompleta);
                 destinationWorkbook.write(fos);
                 destinationWorkbook.close();
@@ -106,6 +108,13 @@ public class ExcelParser {
             } else {
                 System.out.println("Nothing to process.");
             }
+
+            long endTime = System.nanoTime();
+            double durationInMilliseconds = (endTime - startTime)/1000000 ;  //divide by 1000000 to get milliseconds.
+            double durationInSeconds = (endTime - startTime)/1000000000;  //divide by 1000000000 to get seconds.
+            //System.out.println("This process took " + durationInMilliseconds + " milliseconds" + NEW_LINE);
+            System.out.println("This process took " + durationInSeconds + " seconds");
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvalidFormatException e) {
@@ -170,8 +179,8 @@ public class ExcelParser {
                 && cell.getCellType() != CellType.NUMERIC
                 && cell.getCellType() != CellType.ERROR
                 && cell.getCellType() != CellType.BLANK
-        ){
-           // System.out.println("CELL TYPE NOT KNOW: " + cell.getCellType() + " CELL data : " + cell ); //DEBUG
+        ) {
+            // System.out.println("CELL TYPE NOT KNOW: " + cell.getCellType() + " CELL data : " + cell ); //DEBUG
         }
 
 
@@ -182,7 +191,7 @@ public class ExcelParser {
         Row row = destinationSheet.createRow(0);
         Cabecera[] cabeceras = Cabecera.values();
 
-        for (int i = 0; i < cabeceras.length ; i++) {
+        for (int i = 0; i < cabeceras.length; i++) {
             row.createCell(i).setCellValue(cabeceras[i].getNombre());
         }
 
