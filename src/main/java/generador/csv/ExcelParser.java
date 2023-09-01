@@ -48,7 +48,7 @@ public class ExcelParser {
 
                         for (int i = 10; i < sourceSheet.getPhysicalNumberOfRows(); i++) {
 
-                            System.out.println("FIla: " + i);
+                           // System.out.println("FIla: " + i); //DEBUG
                             Row sourceRow = sourceSheet.getRow(i);
 
                             Cell telephoneCell = null ;
@@ -66,9 +66,8 @@ public class ExcelParser {
                                 String normalizedTelephone = normalizeTelephone(telephone);
 
                                 // Check if the person already exists in the destination sheet
-                                int existingRowIndex = findExistingPerson(destinationSheet, person);
 
-                                if ( !normalizedTelephone.isBlank() && !person.isBlank() && existingRowIndex == -1) {
+                                if ( !normalizedTelephone.isBlank() && !person.isBlank() ) {
                                     // Person does not exist, create a new row
                                     Row destinationRow = destinationSheet.createRow(rowIndex++);
                                     Cell destinationTelephoneCell = destinationRow.createCell(Cabecera.C32.getPosicion()); // Column AG
@@ -80,14 +79,7 @@ public class ExcelParser {
                                     destinationPersonCell2.setCellValue(person);
 
 
-                                } /*else if (!normalizedTelephone.isBlank() && !person.isBlank() ){
-                                    // Person exists, update the telephone number
-                                    Row existingRow = destinationSheet.getRow(existingRowIndex);
-                                    Cell existingTelephoneCell = existingRow.getCell(32); // Column AG
-
-                                    existingTelephoneCell.setCellValue(normalizedTelephone);
-                                }*/
-                                destinationSheet.autoSizeColumn(i);
+                                }
                                 processed = true;
                             }
                         }
@@ -99,7 +91,12 @@ public class ExcelParser {
             }
 
             if (processed) {
-                String rutaCompleta = PATH_TO_WRITE + "dummyExample.xlsx" ;
+
+                destinationSheet.autoSizeColumn(Cabecera.C1.getPosicion());
+                destinationSheet.autoSizeColumn(Cabecera.C2.getPosicion());
+                destinationSheet.autoSizeColumn(Cabecera.C32.getPosicion());
+
+                String rutaCompleta = PATH_TO_WRITE + "ContactosExportados.xlsx" ;
                 FileOutputStream fos = new FileOutputStream(rutaCompleta);
                 destinationWorkbook.write(fos);
                 destinationWorkbook.close();
@@ -148,18 +145,6 @@ public class ExcelParser {
         }
     }
 
-    private static int findExistingPerson(Sheet sheet, String person) {
-        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
-            Row row = sheet.getRow(i);
-            Cell personCell = row.getCell(2); // Column C
-
-            if (personCell != null && personCell.getStringCellValue().equals(person)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     private static String getCellPhoneValue(Cell cell) {
 
         String result = "";
@@ -180,13 +165,15 @@ public class ExcelParser {
             result = String.valueOf(cell.getErrorCellValue());
         }
 
+
         if (cell.getCellType() != CellType.STRING
                 && cell.getCellType() != CellType.NUMERIC
                 && cell.getCellType() != CellType.ERROR
                 && cell.getCellType() != CellType.BLANK
         ){
-            System.out.println("CELL TYPE NOT KNOW: " + cell.getCellType() + " CELL data : " + cell );
+           // System.out.println("CELL TYPE NOT KNOW: " + cell.getCellType() + " CELL data : " + cell ); //DEBUG
         }
+
 
         return result;
     }
@@ -197,7 +184,6 @@ public class ExcelParser {
 
         for (int i = 0; i < cabeceras.length ; i++) {
             row.createCell(i).setCellValue(cabeceras[i].getNombre());
-            destinationSheet.autoSizeColumn(i);
         }
 
     }
