@@ -30,33 +30,33 @@ public class GeneradorCsv {
             // Get the first sheet
             Sheet sheet = workbook.getSheetAt(0);
 
-            // Iterate over rows and columns
+            // Determine the maximum column index
+            int maxColumnIndex = 0;
             for (Row row : sheet) {
-                Iterator<Cell> cellIterator = row.iterator();
-                int currentColumn = 0; // Keep track of the current column index
+                int lastCellIndex = row.getLastCellNum();
+                if (lastCellIndex > maxColumnIndex) {
+                    maxColumnIndex = lastCellIndex;
+                }
+            }
 
-                while (cellIterator.hasNext()) {
-                    Cell currentCell = cellIterator.next();
-                    int cellColumn = currentCell.getAddress().getColumn();
-
-                    // Fill in empty columns with delimiters
-                    while (currentColumn < cellColumn) {
-                        csvWriter.write(DELIMITER);
-                        currentColumn++;
-                    }
+            // Iterate over rows
+            for (Row row : sheet) {
+                for (int columnIndex = 0; columnIndex <= maxColumnIndex; columnIndex++) {
+                    Cell cell = row.getCell(columnIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                    String cellValue = cell.toString();
 
                     // Write cell value to CSV
-                    csvWriter.write(currentCell.toString());
-                    currentColumn++;
+                    csvWriter.write(cellValue);
 
-                    // Add a comma for all cells except the last one in each row
-                    if (cellIterator.hasNext()) {
-                        csvWriter.write(DELIMITER);
+                    if (columnIndex < maxColumnIndex) {
+                        // Add a comma between values (except for the last column)
+                        csvWriter.write(",");
                     }
                 }
                 // Add a new line character after each row
                 csvWriter.newLine();
             }
+
 
             // Close the CSV writer and Excel file
             csvWriter.close();
