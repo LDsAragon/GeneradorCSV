@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static generador.csv.Constants.NEW_LINE;
-
 public class ExcelParser {
     public static void main(String[] args) {
         try {
@@ -111,8 +109,8 @@ public class ExcelParser {
             }
 
             long endTime = System.nanoTime();
-            double durationInMilliseconds = (endTime - startTime)/1000000 ;  //divide by 1000000 to get milliseconds.
-            double durationInSeconds = (endTime - startTime)/1000000000;  //divide by 1000000000 to get seconds.
+            double durationInMilliseconds = (endTime - startTime) / 1000000;  //divide by 1000000 to get milliseconds.
+            double durationInSeconds = (endTime - startTime) / 1000000000;  //divide by 1000000000 to get seconds.
             //System.out.println("This process took " + durationInMilliseconds + " milliseconds" + NEW_LINE);
             System.out.println("This process took " + durationInSeconds + " seconds");
 
