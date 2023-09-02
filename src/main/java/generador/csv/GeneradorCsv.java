@@ -4,7 +4,10 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.*;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Properties;
 
 public class GeneradorCsv {
@@ -39,14 +42,23 @@ public class GeneradorCsv {
                 }
             }
 
+            // Create a DecimalFormat to format numeric values as strings
+            DecimalFormat decimalFormat = new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            decimalFormat.setMaximumFractionDigits(Integer.MAX_VALUE);
+
             // Iterate over rows
             for (Row row : sheet) {
                 for (int columnIndex = 0; columnIndex <= maxColumnIndex; columnIndex++) {
                     Cell cell = row.getCell(columnIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    String cellValue = cell.toString();
 
-                    // Write cell value to CSV
-                    csvWriter.write(cellValue);
+                    if (cell.getCellType() == CellType.NUMERIC) {
+                        // Format numeric values as strings
+                        String formattedValue = decimalFormat.format(cell.getNumericCellValue());
+                        csvWriter.write(formattedValue);
+                    } else {
+                        // Write other cell types as is
+                        csvWriter.write(cell.toString());
+                    }
 
                     if (columnIndex < maxColumnIndex) {
                         // Add a comma between values (except for the last column)
