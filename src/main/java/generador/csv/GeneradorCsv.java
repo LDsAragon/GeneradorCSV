@@ -78,7 +78,10 @@ public class GeneradorCsv {
 
             long endTime = System.nanoTime();
             double durationInSeconds = (endTime - startTime) / 1000000000;  //divide by 1000000000 to get seconds.
+            double durationInMilliseconds = (endTime - startTime) / 1000000;  //divide by 1000000 to get milliseconds.
             System.out.println("This process took " + durationInSeconds + " seconds");
+            System.out.println("This process took " + durationInMilliseconds + " milliseconds");
+
 
         } catch (IOException e) {
             e.printStackTrace();

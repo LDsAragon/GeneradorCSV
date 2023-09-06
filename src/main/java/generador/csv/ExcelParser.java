@@ -56,24 +56,25 @@ public class ExcelParser {
                             Cell personCell = null;
 
                             if (sourceRow != null) {
-                                telephoneCell = sourceRow.getCell(19); // Adjust column index for telephone number
+                                telephoneCell = sourceRow.getCell(Constants.CELDAS_TELEFONOS_1); // Adjust column index for telephone number
 
                                 if (telephoneCell == null) {
-                                    telephoneCell = sourceRow.getCell(17);
+                                    telephoneCell = sourceRow.getCell(Constants.CELDAS_TELEFONOS_2);
                                 }
 
-                                personCell = sourceRow.getCell(2); // Adjust column index for person name
+                                personCell = sourceRow.getCell(Constants.CELDAS_NAME); // Adjust column index for person name
                             }
 
                             if (telephoneCell != null && personCell != null) {
                                 String telephone = getCellPhoneValue(telephoneCell);
+
+                                /* If there is no string value in person cell empty it */
                                 String person;
                                 try {
                                     person = personCell.getStringCellValue();
                                 } catch (IllegalStateException ilegaIllegalStateException) {
-                                    person = "";
+                                    person = Constants.VACIO;
                                 }
-
 
                                 String normalizedTelephone = normalizeTelephone(telephone);
 
@@ -108,13 +109,13 @@ public class ExcelParser {
                 destinationSheet.autoSizeColumn(Cabecera.C2.getPosicion());
                 destinationSheet.autoSizeColumn(Cabecera.C32.getPosicion());
 
-                String rutaCompleta = PATH_TO_WRITE + EXCEL_NAME;
-                FileOutputStream fos = new FileOutputStream(rutaCompleta);
+                String finalRoute = PATH_TO_WRITE + EXCEL_NAME;
+                FileOutputStream fos = new FileOutputStream(finalRoute);
                 destinationWorkbook.write(fos);
                 destinationWorkbook.close();
                 fos.close();
 
-                System.out.println("Parsing complete. Output file saved at: " + rutaCompleta);
+                System.out.println("Parsing complete. Output file saved at: " + finalRoute);
             } else {
                 System.out.println("Nothing to process.");
             }
@@ -140,24 +141,26 @@ public class ExcelParser {
         // Remove invisible spaces (Unicode character U+3161)
         telephone = telephone.replace("\u3161", "");
 
+        // Filter BUBATEC phone
         if (telephone.equals("2617198290")) {
-            telephone = "";
+            telephone = Constants.VACIO;
         }
 
         // Normalize country code and area code if present
-        if (telephone.startsWith("549")) {
+        if (telephone.startsWith(Constants.STR_549)) {
             telephone = telephone.substring(3);
-        } else if (telephone.startsWith("54")) {
+        } else if (telephone.startsWith(Constants.STR_54)) {
             telephone = telephone.substring(2);
-        } else if (telephone.startsWith("15")) {
-            telephone = "261" + telephone.substring(2);
+        } else if (telephone.startsWith(Constants.STR_15)) {
+            telephone = Constants.STR_261 + telephone.substring(2);
         }
-        if (telephone.startsWith("0")) {
+        if (telephone.startsWith(Constants.STR_0)) {
             telephone = telephone.substring(1);
         }
 
+        // Remove strange or unusual phones
         if (!telephone.isBlank() && telephone.length() != 10) {
-            telephone = "";
+            telephone = Constants.VACIO;
         }
 
         return telephone;
@@ -175,10 +178,10 @@ public class ExcelParser {
 
     private static String getCellPhoneValue(Cell cell) {
 
-        String result = "";
+        String result = Constants.VACIO;
 
         if (cell.getCellType().equals(CellType.BLANK)) {
-            result = "";
+            result = Constants.VACIO;
         }
 
         if (cell.getCellType().equals(CellType.STRING)) {
@@ -206,10 +209,10 @@ public class ExcelParser {
 
     private static void generateHeader(Sheet destinationSheet) {
         Row row = destinationSheet.createRow(0);
-        Cabecera[] cabeceras = Cabecera.values();
+        Cabecera[] header = Cabecera.values();
 
-        for (int i = 0; i < cabeceras.length; i++) {
-            row.createCell(i).setCellValue(cabeceras[i].getNombre());
+        for (int i = 0; i < header.length; i++) {
+            row.createCell(i).setCellValue(header[i].getNombre());
         }
 
     }
