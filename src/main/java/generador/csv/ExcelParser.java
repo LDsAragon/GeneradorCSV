@@ -49,7 +49,7 @@ public class ExcelParser {
 
                         for (int i = 10; i < sourceSheet.getPhysicalNumberOfRows(); i++) {
 
-                            // System.out.println("FIla: " + i); //DEBUG
+                            //System.out.println("FIla: " + i); //DEBUG
                             Row sourceRow = sourceSheet.getRow(i);
 
                             Cell telephoneCell = null;
@@ -59,7 +59,7 @@ public class ExcelParser {
                                 telephoneCell = sourceRow.getCell(19); // Adjust column index for telephone number
 
                                 if (telephoneCell == null) {
-                                    telephoneCell = sourceRow.getCell(17) ;
+                                    telephoneCell = sourceRow.getCell(17);
                                 }
 
                                 personCell = sourceRow.getCell(2); // Adjust column index for person name
@@ -67,19 +67,13 @@ public class ExcelParser {
 
                             if (telephoneCell != null && personCell != null) {
                                 String telephone = getCellPhoneValue(telephoneCell);
-                                String person ;
+                                String person;
                                 try {
                                     person = personCell.getStringCellValue();
-                                } catch (IllegalStateException ilegaIllegalStateException){
-                                    person = "" ;
+                                } catch (IllegalStateException ilegaIllegalStateException) {
+                                    person = "";
                                 }
 
-                                /*
-                                if(person.equals("MORALES CECILIA")){
-                                    System.out.println(person);
-                                    System.out.println(telephone);
-                                }
-                                */
 
                                 String normalizedTelephone = normalizeTelephone(telephone);
 
@@ -126,9 +120,8 @@ public class ExcelParser {
             }
 
             long endTime = System.nanoTime();
-            //double durationInMilliseconds = (endTime - startTime) / 1000000;  //divide by 1000000 to get milliseconds.
+            double durationInMilliseconds = (endTime - startTime) / 1000000;  //divide by 1000000 to get milliseconds.
             double durationInSeconds = (endTime - startTime) / 1000000000;  //divide by 1000000000 to get seconds.
-            //System.out.println("This process took " + durationInMilliseconds + " milliseconds" + NEW_LINE);
             System.out.println("This process took " + durationInSeconds + " seconds");
 
         } catch (IOException e) {
@@ -147,6 +140,10 @@ public class ExcelParser {
         // Remove invisible spaces (Unicode character U+3161)
         telephone = telephone.replace("\u3161", "");
 
+        if (telephone.equals("2617198290")) {
+            telephone = "";
+        }
+
         // Normalize country code and area code if present
         if (telephone.startsWith("549")) {
             telephone = telephone.substring(3);
@@ -155,15 +152,13 @@ public class ExcelParser {
         } else if (telephone.startsWith("15")) {
             telephone = "261" + telephone.substring(2);
         }
-
-            if (telephone.startsWith("0")) {
+        if (telephone.startsWith("0")) {
             telephone = telephone.substring(1);
         }
 
-        if(!telephone.isBlank() && telephone.length() !=10) {
-            telephone = "" ;
+        if (!telephone.isBlank() && telephone.length() != 10) {
+            telephone = "";
         }
-
 
         return telephone;
     }
@@ -202,11 +197,9 @@ public class ExcelParser {
         if (cell.getCellType() != CellType.STRING
                 && cell.getCellType() != CellType.NUMERIC
                 && cell.getCellType() != CellType.ERROR
-                && cell.getCellType() != CellType.BLANK
-        ) {
+                && cell.getCellType() != CellType.BLANK) {
             // System.out.println("CELL TYPE NOT KNOW: " + cell.getCellType() + " CELL data : " + cell ); //DEBUG
         }
-
 
         return result;
     }
