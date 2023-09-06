@@ -62,7 +62,7 @@ public class GeneradorCsv {
 
                     if (columnIndex < maxColumnIndex) {
                         // Add a comma between values (except for the last column)
-                        csvWriter.write(",");
+                        csvWriter.write(DELIMITER);
                     }
                 }
                 // Add a new line character after each row

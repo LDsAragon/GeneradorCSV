@@ -57,12 +57,29 @@ public class ExcelParser {
 
                             if (sourceRow != null) {
                                 telephoneCell = sourceRow.getCell(19); // Adjust column index for telephone number
+
+                                if (telephoneCell == null) {
+                                    telephoneCell = sourceRow.getCell(17) ;
+                                }
+
                                 personCell = sourceRow.getCell(2); // Adjust column index for person name
                             }
 
                             if (telephoneCell != null && personCell != null) {
                                 String telephone = getCellPhoneValue(telephoneCell);
-                                String person = personCell.getStringCellValue();
+                                String person ;
+                                try {
+                                    person = personCell.getStringCellValue();
+                                } catch (IllegalStateException ilegaIllegalStateException){
+                                    person = "" ;
+                                }
+
+                                /*
+                                if(person.equals("MORALES CECILIA")){
+                                    System.out.println(person);
+                                    System.out.println(telephone);
+                                }
+                                */
 
                                 String normalizedTelephone = normalizeTelephone(telephone);
 
@@ -109,7 +126,7 @@ public class ExcelParser {
             }
 
             long endTime = System.nanoTime();
-            double durationInMilliseconds = (endTime - startTime) / 1000000;  //divide by 1000000 to get milliseconds.
+            //double durationInMilliseconds = (endTime - startTime) / 1000000;  //divide by 1000000 to get milliseconds.
             double durationInSeconds = (endTime - startTime) / 1000000000;  //divide by 1000000000 to get seconds.
             //System.out.println("This process took " + durationInMilliseconds + " milliseconds" + NEW_LINE);
             System.out.println("This process took " + durationInSeconds + " seconds");
@@ -118,15 +135,17 @@ public class ExcelParser {
             e.printStackTrace();
         } catch (InvalidFormatException e) {
             e.printStackTrace();
-            //throw new RuntimeException(e);
         }
     }
 
     private static String normalizeTelephone(String telephone) {
         // Clean the telephone number by removing noise characters
+        telephone = telephone.replaceAll("E9", "");
         telephone = telephone.replaceAll("[^0-9]", "");
         telephone = telephone.replaceAll("\"", "");
         telephone = telephone.replaceAll("'", "");
+        // Remove invisible spaces (Unicode character U+3161)
+        telephone = telephone.replace("\u3161", "");
 
         // Normalize country code and area code if present
         if (telephone.startsWith("549")) {
@@ -137,8 +156,14 @@ public class ExcelParser {
             telephone = "261" + telephone.substring(2);
         }
 
-        // Remove invisible spaces (Unicode character U+3161)
-        telephone = telephone.replace("\u3161", "");
+            if (telephone.startsWith("0")) {
+            telephone = telephone.substring(1);
+        }
+
+        if(!telephone.isBlank() && telephone.length() !=10) {
+            telephone = "" ;
+        }
+
 
         return telephone;
     }
